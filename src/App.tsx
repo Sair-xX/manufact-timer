@@ -1,17 +1,37 @@
-import { useTimer } from './hooks/useTimer.ts';
-import { TimerDisplay } from './components/TimerDisplay.tsx';
-import { StopButton } from './components/StopButton.tsx';
-import { SwitchButton } from './components/SwitchButton.tsx';
-import { StartButton } from './components/StartButton.tsx';
+import { useTimer } from './hooks/useTimer';
+import { TimerDisplay } from './components/TimerDisplay';
+import { StopButton } from './components/StopButton';
+import { SwitchButton } from './components/SwitchButton';
+import { StartButton } from './components/StartButton';
 
 export default function App() {
-  const { time, isRunning, start, stop, mode, switchMode } = useTimer();
+  const { time, isRunning, start, stop, mode, switchMode, hasStarted } = useTimer();
+
+  if (!hasStarted) {
+    return (
+      <div className="container">
+        <TimerDisplay time={time} mode={mode} />
+        <div className="divider" />
+        <StartButton hasStarted={hasStarted} start={start} />
+      </div>
+    );
+  }
+
+  if (time === 0) {
+    return (
+      <div className="container">
+        <TimerDisplay time={time} mode={mode} />
+        <div className="divider" />
+        <SwitchButton mode={mode} switchMode={switchMode} />
+      </div>
+    );
+  }
+
   return (
-    <>
-      <TimerDisplay time={time} />
+    <div className="container">
+      <TimerDisplay time={time} mode={mode} />
+      <div className="divider" />
       <StopButton isRunning={isRunning} start={start} stop={stop} />
-      <SwitchButton mode={mode} switchMode={switchMode} />
-      <StartButton isRunning={isRunning} start={start} />
-    </>
+    </div>
   );
 }

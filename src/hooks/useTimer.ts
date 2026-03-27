@@ -1,14 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import { WORK_TIME, BREAK_TIME } from '../constans.ts';
-import { Mode } from '../types.ts';
+import { WORK_TIME, BREAK_TIME } from '../constants';
+import type { Mode } from '../types';
 
 export function useTimer() {
-  // stateとロジックはあとで書く
   const [time, setTime] = useState<number>(WORK_TIME);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [mode, setMode] = useState<Mode>('work');
+  const [hasStarted, setHasStarted] = useState(false);
 
   const intervalRef = useRef<ReturnType<typeof setInterval>>(null);
+
   useEffect(() => {
     if (isRunning) {
       intervalRef.current = setInterval(() => {
@@ -19,26 +20,17 @@ export function useTimer() {
     }
   }, [isRunning]);
 
-  const start = () => setIsRunning(true);
+  const start = () => {
+    setHasStarted(true);
+    setIsRunning(true);
+  };
   const stop = () => setIsRunning(false);
 
   const switchMode = () => {
     mode === 'work' ? setMode('break') : setMode('work');
     mode === 'work' ? setTime(BREAK_TIME) : setTime(WORK_TIME);
+    setIsRunning(false);
   };
 
-  // const switchMode = () => {
-  //   const next = mode === "work" ? "break" : "work";
-  //   setMode(next);
-  //   setTime(next === "work" ? WORK_TIME : BREAK_TIME);
-  // };
-
-  return {
-    time,
-    isRunning,
-    mode,
-    start,
-    stop,
-    switchMode,
-  };
+  return { time, isRunning, mode, hasStarted, start, stop, switchMode };
 }
